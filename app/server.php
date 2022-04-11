@@ -3,7 +3,10 @@
   require_once 'models/user.php';
   require_once 'models/config.php';
   require_once 'views/view.php';
+  session_start();
   Config::setup();
+  User::authenticate_user();
+
   $router = new Router('/posts');
 
   $router->on(Router::GET, '/users/new', function() {
@@ -44,6 +47,25 @@
     else{
       $_SESSION['alert'] = "註冊失敗";
       header('Location: /users/new', true, 301);
+      die();
+    }
+  });
+
+  $router->on(Router::GET, '/sessions/new', function() {
+    View::render(array(
+      'template'=>'views/sessions/new.php'
+    ));
+  });
+
+  $router->on(Router::POST, '/sessions', function(){
+    if (User::login($_REQUEST['email'], $_REQUEST['password'])) {
+      $_SESSION['notice'] = "登入成功";
+      header('Location: /', true, 301);
+      die();
+    }
+    else{
+      $_SESSION['alert'] = "登入失敗";
+      header('Location: /sessions/new', true, 301);
       die();
     }
   });
