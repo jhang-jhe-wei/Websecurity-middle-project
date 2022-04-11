@@ -39,6 +39,14 @@ class Post
     return $result->fetch_assoc();
   }
 
+  public static function delete($attrs){
+    $base = new Base();
+    $sql = $base->conn->prepare(<<<SQL
+      DELETE FROM `posts` WHERE `id` = ?;
+    SQL);
+    $sql->bind_param('i', $attrs['id']);
+    return $sql->execute();
+  }
 
   private static function save_file($file){
     preg_match('/(.*)\.(.*)$/', $file['name'], $match);

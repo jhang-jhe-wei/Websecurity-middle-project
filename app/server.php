@@ -149,6 +149,27 @@
     ));
   });
 
+  $router->on(Router::DELETE, '/posts/(?P<id>[0-9]+)', function($params) {
+    need_signed();
+    $result = null;
+    $post = Post::find_by_id($params['id']);
+    if($post['user_id'] == User::$current_user['id']){
+      $result = Post::delete(array(
+        'id' => $params['id']
+      ));
+    }
+    if($result){
+      $_SESSION['notice'] = "刪除成功";
+      header('Location: /', true, 301);
+      die();
+    }
+    else{
+      $_SESSION['alert'] = "刪除失敗";
+      header('Location: /', true, 301);
+      die();
+    }
+  });
+
   $router->on(Router::GET, '/admin', function() {
     if (User::$current_user && User::$current_user['role'] === 'admin') {
       View::render(array(
