@@ -70,6 +70,13 @@
     }
   });
 
+  $router->on(Router::DELETE, '/sessions', function(){
+    $_SESSION['notice'] = "已登出";
+    unset($_SESSION['user_id']);
+    header('Location: /sessions/new', true, 301);
+    die();
+  });
+
   $router->run();
 
 ?>
