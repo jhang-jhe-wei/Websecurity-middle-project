@@ -1,5 +1,6 @@
 <?php
 require_once 'base.php';
+require_once '../lib/guid.php';
 class User
 {
   public static $current_user = null;
@@ -12,6 +13,28 @@ class User
     SQL);
     $sql->bind_param('sss', $attrs['email'], $attrs['username'], $encrypted_password);
     return $sql->execute();
+  }
+
+  public static function update($attrs){
+    if (!empty($attrs['image']['tmp_name'])) {
+      $image_url = self::save_image($attrs['image']);
+    }elseif ($attrs['image_url']) {
+      $image_url = self::save_image_from_url($attrs['image_url']);
+    }
+    $image_url = $image_url ?? self::$current_user['image_url'];
+    $base = new Base();
+    $sql = $base->conn->prepare(<<<SQL
+      UPDATE `users` SET `username` = ?,`image_url`=? WHERE `id`=?;
+    SQL);
+    $sql->bind_param('ssi', $attrs['username'], $image_url, self::$current_user['id']);
+    return $sql->execute();
+  }
+
+  public static function is_signed(){
+    if (empty(self::$current_user)) {
+      return false;
+    }
+    return true;
   }
 
   public static function login($email, $password){
@@ -43,5 +66,27 @@ class User
     self::$current_user = $row;
   }
 
+  private static function save_image($file){
+    preg_match('/(.*)\.(.*)$/', $file['name'], $match);
+    $file_name = UUID::guid() . htmlspecialchars(".{$match[2]}");
+    $target_file = "/var/public/{$file_name}";
+    if (move_uploaded_file($file['tmp_name'], $target_file)) {
+      return "/public/{$file_name}";
+    } else {
+      return false;
+    }
+  }
+
+
+  private static function save_image_from_url($image_url){
+    preg_match('/(.*)\.(.*)$/', $image_url, $match);
+    $file_name = UUID::guid() . htmlspecialchars(".{$match[2]}");
+    $target_file = "/var/public/{$file_name}";
+    if (file_put_contents($target_file, file_get_contents($image_url))) {
+      return "/public/{$file_name}";
+    }
+    $_SESSION['alert'] = '圖片上傳失敗';
+    return false;
+  }
 }
 ?>

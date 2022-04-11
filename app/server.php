@@ -15,6 +15,13 @@
     ));
   });
 
+  $router->on(Router::GET, '/user/edit', function() {
+    need_signed();
+    View::render(array(
+      'template'=>'views/users/edit.php'
+    ));
+  });
+
   $router->on(Router::POST, '/users', function() {
     verify_authenticity_token();
     $email = $_REQUEST['email'];
@@ -51,6 +58,28 @@
     }
   });
 
+  $router->on(Router::PATCH, '/user', function() {
+    need_signed();
+    if(empty($_REQUEST['username'])){
+      $username = User::$current_user['username'];
+    }else{
+      $username = htmlspecialchars($_REQUEST['username']);
+    }
+    $result = User::update(array(
+      'username' => $username,
+      'image' => $_FILES['image'],
+      'image_url' => $_REQUEST['image_url']
+    ));
+    if ($result) {
+      $_SESSION['notice'] = "已成功修改";
+      header('Location: /', true, 301);
+      die();
+    }else{
+      header('Location: /user/edit', true, 301);
+      die();
+    }
+  });
+
   $router->on(Router::GET, '/sessions/new', function() {
     View::render(array(
       'template'=>'views/sessions/new.php'
@@ -78,5 +107,13 @@
   });
 
   $router->run();
+
+  function need_signed(){
+    if (!User::$current_user){
+      $_SESSION['alert'] = "請先登入";
+      header('Location: /sessions/new', true, 301);
+      die();
+    }
+  }
 
 ?>
