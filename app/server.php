@@ -8,6 +8,10 @@
   Config::setup();
   User::authenticate_user();
 
+  if (!isset($_SESSION['token'])) {
+    $_SESSION['token'] = bin2hex(random_bytes(32));
+  }
+
   $router = new Router('/posts');
 
   $router->on(Router::GET, '/users/new', function() {
@@ -61,6 +65,8 @@
 
   $router->on(Router::PATCH, '/user', function() {
     need_signed();
+    verify_authenticity_token();
+
     if(empty($_REQUEST['username'])){
       $username = User::$current_user['username'];
     }else{
@@ -88,6 +94,7 @@
   });
 
   $router->on(Router::POST, '/sessions', function(){
+    verify_authenticity_token();
     if (User::login($_REQUEST['email'], $_REQUEST['password'])) {
       $_SESSION['notice'] = "登入成功";
       header('Location: /', true, 301);
@@ -101,6 +108,7 @@
   });
 
   $router->on(Router::DELETE, '/sessions', function(){
+    verify_authenticity_token();
     $_SESSION['notice'] = "已登出";
     unset($_SESSION['user_id']);
     header('Location: /sessions/new', true, 301);
@@ -124,6 +132,7 @@
 
   $router->on(Router::POST, '/posts', function() {
     need_signed();
+    verify_authenticity_token();
     $result = Post::create(array(
       'user_id' => User::$current_user['id'],
       'title' => $_REQUEST['title'],
@@ -151,6 +160,7 @@
 
   $router->on(Router::DELETE, '/posts/(?P<id>[0-9]+)', function($params) {
     need_signed();
+    verify_authenticity_token();
     $result = null;
     $post = Post::find_by_id($params['id']);
     if($post['user_id'] == User::$current_user['id']){
@@ -207,4 +217,13 @@
     }
   }
 
+  function verify_authenticity_token(){
+    if (hash_equals($_SESSION['token'], $_POST['token'])) {
+      return true;
+    }else{
+      $_SESSION['alert'] = "請先登入";
+      http_response_code(403);
+      die();
+    }
+  }
 ?>
