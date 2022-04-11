@@ -115,6 +115,33 @@
     ));
   });
 
+  $router->on(Router::GET, '/posts/new', function() {
+    need_signed();
+    View::render(array(
+      'template'=>'views/posts/new.php'
+    ));
+  });
+
+  $router->on(Router::POST, '/posts', function() {
+    need_signed();
+    $result = Post::create(array(
+      'user_id' => User::$current_user['id'],
+      'title' => $_REQUEST['title'],
+      'content' => $_REQUEST['content'],
+      'file' => $_FILES['file']
+    ));
+    if($result){
+      $_SESSION['notice'] = "建立成功";
+      header('Location: /', true, 301);
+      die();
+    }
+    else{
+      $_SESSION['alert'] = "建立失敗";
+      header('Location: /posts/new', true, 301);
+      die();
+    }
+  });
+
   $router->on(Router::GET, '/admin', function() {
     if (User::$current_user && User::$current_user['role'] === 'admin') {
       View::render(array(
