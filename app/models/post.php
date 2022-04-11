@@ -28,6 +28,17 @@ class Post
     return $conn->execute_sql($sql);
   }
 
+  public static function find_by_id($id){
+    $base = new Base();
+    $sql = $base->conn->prepare(<<<SQL
+      SELECT * FROM `posts` WHERE `id` = ?;
+    SQL);
+    $sql->bind_param('i', $id);
+    $sql->execute();
+    $result = $sql->get_result();
+    return $result->fetch_assoc();
+  }
+
 
   private static function save_file($file){
     preg_match('/(.*)\.(.*)$/', $file['name'], $match);

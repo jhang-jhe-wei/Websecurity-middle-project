@@ -142,6 +142,13 @@
     }
   });
 
+  $router->on(Router::GET, '/posts/(?P<id>[0-9]+)', function($params) {
+    View::render(array(
+      'template' => 'views/posts/show.php',
+      'post' => Post::find_by_id($params['id'])
+    ));
+  });
+
   $router->on(Router::GET, '/admin', function() {
     if (User::$current_user && User::$current_user['role'] === 'admin') {
       View::render(array(
