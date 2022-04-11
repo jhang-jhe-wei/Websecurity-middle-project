@@ -1,6 +1,7 @@
 <?php
   require_once 'router.php';
   require_once 'models/user.php';
+  require_once 'models/post.php';
   require_once 'models/config.php';
   require_once 'views/view.php';
   session_start();
@@ -104,6 +105,14 @@
     unset($_SESSION['user_id']);
     header('Location: /sessions/new', true, 301);
     die();
+  });
+
+  $router->on(Router::GET, '/posts', function() {
+    $posts = POST::all();
+      View::render(array(
+      'template'=>'views/posts/index.php',
+      'posts' => $posts
+    ));
   });
 
   $router->on(Router::GET, '/admin', function() {
