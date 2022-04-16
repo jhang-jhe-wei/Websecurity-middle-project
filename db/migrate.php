@@ -18,11 +18,6 @@ if (!check_table_exist($mysqli, 'users')) {
       UNIQUE(email)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
   SQL);
-  $encrypted_password = password_hash('12345678', PASSWORD_DEFAULT);
-
-  $mysqli->query(<<<SQL
-    INSERT INTO `users` (`email`, `username`, `password`, `role`) VALUES ('admin@gmail.com', 'admin','{$encrypted_password}', 'admin');
-  SQL);
 }
 
 if (!check_table_exist($mysqli, 'posts')) {
