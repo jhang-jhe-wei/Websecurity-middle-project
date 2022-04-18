@@ -83,6 +83,7 @@
       die();
     }else{
       header('Location: /user/edit', true, 301);
+      $_SESSION['alert'] = "修改失敗";
       die();
     }
   });

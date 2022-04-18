@@ -20,8 +20,12 @@ class User
       $image_url = self::save_image($attrs['image']);
     }elseif ($attrs['image_url']) {
       $image_url = self::save_image_from_url($attrs['image_url']);
+    }else{
+      $image_url = self::$current_user['image_url'];
     }
-    $image_url = $image_url ?? self::$current_user['image_url'];
+    if (empty($image_url)) {
+      return false;
+    }
     $base = new Base();
     $sql = $base->conn->prepare(<<<SQL
       UPDATE `users` SET `username` = ?,`image_url`=? WHERE `id`=?;
@@ -67,25 +71,23 @@ class User
   }
 
   private static function save_image($file){
-    preg_match('/(.*)\.(.*)$/', $file['name'], $match);
-    $file_name = UUID::guid() . htmlspecialchars(".{$match[2]}");
+    preg_match('/(.*)(\..*)$/', $file['name'], $match);
+    $file_name = UUID::guid() . htmlspecialchars($match[2]);
     $target_file = "/var/public/{$file_name}";
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
       return "/public/{$file_name}";
-    } else {
-      return false;
     }
+    return false;
   }
 
 
   private static function save_image_from_url($image_url){
-    preg_match('/(.*)\.(.*)$/', $image_url, $match);
-    $file_name = UUID::guid() . htmlspecialchars(".{$match[2]}");
+    preg_match('/(.*)(\..*)$/', $image_url, $match);
+    $file_name = UUID::guid() . htmlspecialchars($match[2]);
     $target_file = "/var/public/{$file_name}";
     if (file_put_contents($target_file, file_get_contents($image_url))) {
       return "/public/{$file_name}";
     }
-    $_SESSION['alert'] = '圖片上傳失敗';
     return false;
   }
 }
