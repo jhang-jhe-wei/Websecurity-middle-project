@@ -19,13 +19,7 @@ class Config
       SELECT * FROM `configs` WHERE `key` = 'title';
     SQL);
     $sql->execute();
-    $result = $sql->get_result();
-    if(mysqli_num_rows($result) == 0){
-      $base->execute_sql(<<<SQL
-        INSERT INTO `configs` (`key`, `value`) VALUES ('title', 'Web Security');
-      SQL);
-    }
-    self::$site_title = $result->fetch_assoc()['value'] ?? "Web Security";
+    self::$site_title = $sql->get_result()->fetch_assoc()['value'];
   }
 }
 
