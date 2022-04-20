@@ -71,8 +71,8 @@ class User
   }
 
   private static function save_image($file){
-    preg_match('/(.*)(\..*)$/', $file['name'], $match);
-    $file_name = UUID::guid() . htmlspecialchars($match[2]);
+    preg_match('/.*(\..*)$/', $file['name'], $match);
+    $file_name = UUID::guid() . htmlspecialchars($match[1]);
     $target_file = "/var/public/{$file_name}";
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
       return "/public/{$file_name}";
@@ -82,8 +82,11 @@ class User
 
 
   private static function save_image_from_url($image_url){
-    preg_match('/(.*)(\..*)$/', $image_url, $match);
-    $file_name = UUID::guid() . htmlspecialchars($match[2]);
+    if (!preg_match('/^https?:\/\/.*/', $image_url)) {
+      return false;
+    }
+    preg_match('/.*(\..*)$/', $image_url, $match);
+    $file_name = UUID::guid() . htmlspecialchars($match[1]);
     $target_file = "/var/public/{$file_name}";
     if (file_put_contents($target_file, file_get_contents($image_url))) {
       return "/public/{$file_name}";
