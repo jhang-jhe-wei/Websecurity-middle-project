@@ -194,11 +194,24 @@
     verify_authenticity_token();
     $result = null;
     $post = Post::find_by_id($params['id']);
+
+    if (empty($post)) {
+      $_SESSION['alert'] = "不要壞壞亂刪文章";
+      header('Location: /posts', true, 301);
+      die();
+    }
+
     if($post['user_id'] == User::$current_user['id']){
       $result = Post::delete(array(
         'id' => $params['id']
       ));
     }
+    else {
+      $_SESSION['alert'] = "不要壞壞亂刪文章";
+      header('Location: /', true, 301);
+      die();
+    }
+
     if($result){
       $_SESSION['notice'] = "刪除成功";
       header('Location: /', true, 301);
