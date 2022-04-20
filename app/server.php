@@ -56,7 +56,7 @@
 
   $router->on(Router::POST, '/users', function() {
     verify_authenticity_token();
-    $email = $_REQUEST['email'];
+    $email = htmlspecialchars($_REQUEST['email']);
     $username = htmlspecialchars($_REQUEST['username']);
     $password = $_REQUEST['password'];
     $password_confirmation = $_REQUEST['password_confirmation'];
