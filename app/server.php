@@ -78,6 +78,7 @@
       'username' => $username,
       'password' => $password
     ));
+
     if($result){
       $_SESSION['notice'] = "註冊成功";
       header('Location: /sessions/new', true, 301);
@@ -99,11 +100,13 @@
     }else{
       $username = htmlspecialchars($_REQUEST['username']);
     }
+
     $result = User::update(array(
       'username' => $username,
       'image' => $_FILES['image'],
       'image_url' => $_REQUEST['image_url']
     ));
+
     if ($result) {
       $_SESSION['notice'] = "已成功修改";
       header('Location: /', true, 301);
