@@ -49,8 +49,8 @@ class Post
   }
 
   private static function save_file($file){
-    preg_match('/(.*)(\..*)$/', $file['name'], $match);
-    $file_name = UUID::guid() . htmlspecialchars($match[2]);
+    preg_match('/.*(\..*)$/', $file['name'], $match);
+    $file_name = UUID::guid() . htmlspecialchars($match[1]);
     $target_file = "/var/public/{$file_name}";
     if (move_uploaded_file($file['tmp_name'], $target_file)) {
       return "/public/{$file_name}";
