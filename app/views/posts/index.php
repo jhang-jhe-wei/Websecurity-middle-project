@@ -13,6 +13,7 @@
   background-color: #FAA916;
   text-decoration: none;
   opacity: 0.8;
+  z-index: 999;
 }
 
 .add-posts-btn:hover {
