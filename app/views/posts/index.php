@@ -94,7 +94,7 @@
       <form class="d-inline" method="POST" action="/posts/<?php echo $post['id'] ?>">
         <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="token" value="<?php echo $_SESSION['token'] ?>" >
-        <a href="#" class="close" onclick="this.closest('form').submit();return false;"></a>
+        <a href="#" class="close" onclick="confirm('你確定要刪掉文章嗎？') && this.closest('form').submit();return false;"></a>
       </form>
     <?php endif; ?>
     <h2>
