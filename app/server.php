@@ -183,9 +183,17 @@
   });
 
   $router->on(Router::GET, '/posts/(?P<id>[0-9]+)', function($params) {
+    $post = Post::find_by_id($params['id']);
+
+    if (empty($post)) {
+      $_SESSION['alert'] = "不要壞壞偷猜文章編號";
+      header('Location: /posts', true, 301);
+      die();
+    }
+
     View::render(array(
       'template' => 'views/posts/show.php',
-      'post' => Post::find_by_id($params['id'])
+      'post' => $post
     ));
   });
 
