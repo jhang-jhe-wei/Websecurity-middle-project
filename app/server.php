@@ -265,7 +265,6 @@
     if (hash_equals($_SESSION['token'], $_POST['token'])) {
       return true;
     }else{
-      $_SESSION['alert'] = "請先登入";
       http_response_code(403);
       die();
     }
