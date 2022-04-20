@@ -233,33 +233,39 @@
   });
 
   $router->on(Router::GET, '/admin', function() {
-    if (User::$current_user && User::$current_user['role'] === 'admin') {
-      View::render(array(
-        'template'=>'views/admin/index.php'
-      ));
-    }else{
-      $_SESSION['alert'] = "您沒有權限";
-      header('Location: /', true, 301);
-      die();
-    }
+    need_signed();
+    need_admin();
+    View::render(array(
+      'template'=>'views/admin/index.php'
+    ));
   });
 
   $router->on(Router::PATCH, '/admin', function() {
     verify_authenticity_token();
-    if (User::$current_user && User::$current_user['role'] === 'admin') {
-      $title = strip_tags($_REQUEST['title']);
-      Config::update_title($title);
-      $_SESSION['notice'] = "已成功修改";
+    need_signed();
+    need_admin();
+
+    $title = htmlspecialchars($_REQUEST['title']);
+    $site_title = Config::update_title($title);
+    if(empty($site_title)){
+      $_SESSION['alert'] = "修改失敗";
       header('Location: /admin', true, 301);
       die();
-    }else{
-      $_SESSION['alert'] = "您沒有權限";
-      header('Location: /', true, 301);
-      die();
     }
+    $_SESSION['notice'] = "已成功修改";
+    header('Location: /admin', true, 301);
+    die();
   });
 
   $router->run();
+
+  function need_admin(){
+    if (User::$current_user['role'] != 'admin'){
+      $_SESSION['alert'] = "您沒有權限壞壞";
+      header('Location: /', true, 301);
+      die();
+    }
+  }
 
   function need_signed(){
     if (!User::$current_user){
