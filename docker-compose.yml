@@ -35,6 +35,7 @@ services:
     image: mysql:8.0
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./db/:/docker-entrypoint-initdb.d/:ro
     environment:
       MYSQL_DATABASE: "${DB_NAME}"
       MYSQL_USER: "${DB_USERNAME}"
