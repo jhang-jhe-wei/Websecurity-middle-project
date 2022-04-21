@@ -102,7 +102,7 @@
         <?php echo $post['title'] ?>
       </a>
     </h2>
-    <p class="post-card-content"><?php echo $post['content'] ?></p>
+    <p class="post-card-content"><?php echo strip_tags($post['content'], "<b><i><u><span>") ?></p>
     <div class="post-card-info">
       <img class="img-profile rounded-circle" width="20" height="20" src="<?php echo htmlspecialchars($post['image_url']) ?>">
       <span class="align-middle me-2"><?php echo htmlspecialchars($post['username']) ?></span>
