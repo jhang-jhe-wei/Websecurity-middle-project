@@ -90,7 +90,7 @@
 <div class="pb-5">
 <?php while ($post = mysqli_fetch_assoc($posts)): ?>
   <div class="post-card">
-    <?php if (User::$current_user['id'] == $post['user_id']): ?>
+    <?php if (User::$current_user['id'] == $post['user_id'] || User::$current_user['role'] === 'admin'): ?>
       <form class="d-inline" method="POST" action="/posts/<?php echo $post['id'] ?>">
         <input type="hidden" name="_method" value="DELETE">
         <input type="hidden" name="token" value="<?php echo $_SESSION['token'] ?>" >

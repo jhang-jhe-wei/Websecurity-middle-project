@@ -209,7 +209,7 @@
       die();
     }
 
-    if($post['user_id'] == User::$current_user['id']){
+    if($post['user_id'] == User::$current_user['id'] || User::$current_user['role'] === 'admin'){
       $result = Post::delete(array(
         'id' => $params['id']
       ));
